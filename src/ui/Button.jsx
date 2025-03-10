@@ -1,4 +1,5 @@
 import styled, { css } from "styled-components";
+import PropTypes from "prop-types";
 
 const sizes = {
   small: css`
@@ -47,3 +48,51 @@ const variations = {
     }
   `,
 };
+
+const StyledButton = styled.button`
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s;
+
+  ${({ size }) => sizes[size] || sizes.medium}
+  ${({ variation }) => variations[variation] || variations.primary}
+
+  ${({ isDisabled }) =>
+    isDisabled &&
+    css`
+      opacity: 0.6;
+      cursor: not-allowed;
+      pointer-events: none;
+    `}
+`;
+
+function Button({
+  children,
+  size = "medium",
+  variation = "primary",
+  onClick,
+  isDisabled = false,
+}) {
+  return (
+    <StyledButton
+      size={size}
+      variation={variation}
+      onClick={onClick}
+      disabled={isDisabled}
+      isDisabled={isDisabled}
+    >
+      {children}
+    </StyledButton>
+  );
+}
+
+Button.propTypes = {
+  children: PropTypes.node.isRequired,
+  size: PropTypes.oneOf(["small", "medium", "large"]),
+  variation: PropTypes.oneOf(["primary", "secondary", "danger"]),
+  onClick: PropTypes.func,
+  isDisabled: PropTypes.bool,
+};
+
+export default Button;

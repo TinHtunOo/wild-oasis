@@ -3,6 +3,10 @@ import styled from "styled-components";
 const FileInput = styled.input`
   font-size: 1.4rem;
   border-radius: var(--border-radius-sm);
+  padding: 0.3rem;
+  background-color: var(--color-grey-0);
+  box-shadow: var(--shadow-sm);
+  width: 100%;
 
   &::file-selector-button {
     font: inherit;

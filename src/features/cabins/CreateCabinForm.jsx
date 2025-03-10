@@ -5,6 +5,10 @@ import Form from "../../ui/Form";
 import Button from "../../ui/Button";
 import FileInput from "../../ui/FileInput";
 import Textarea from "../../ui/Textarea";
+import { useForm } from "react-hook-form";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { createCabins } from "../../services/apiCabins";
+import toast from "react-hot-toast";
 
 const FormRow = styled.div`
   display: grid;
@@ -43,31 +47,106 @@ const Error = styled.span`
 `;
 
 function CreateCabinForm() {
+  const queryClient = useQueryClient();
+  const { register, handleSubmit, reset, getValues, formState } = useForm();
+  const { errors } = formState;
+
+  const { isLoading: isCreating, mutate } = useMutation({
+    mutationFn: createCabins,
+    onSuccess: () => {
+      toast.success("The cabin is successfully created.");
+      queryClient.invalidateQueries({
+        queryKey: ["cabins"],
+      });
+      reset();
+    },
+    onError: (err) => toast.error(err.message),
+  });
+
+  function onSubmit(data) {
+    mutate(data);
+  }
+
+  function onError() {
+    // console.log(errs);
+  }
   return (
-    <Form>
+    <Form onSubmit={handleSubmit(onSubmit, onError)}>
       <FormRow>
         <Label htmlFor="name">Cabin name</Label>
-        <Input type="text" id="name" />
+        <Input
+          type="text"
+          id="name"
+          {...register("name", { required: "This field should not be empty." })}
+        />
+        {errors?.name?.message && <Error>{errors.name.message}</Error>}
       </FormRow>
 
       <FormRow>
         <Label htmlFor="maxCapacity">Maximum capacity</Label>
-        <Input type="number" id="maxCapacity" />
+        <Input
+          type="number"
+          id="maxCapacity"
+          {...register("maxCapacity", {
+            required: "This field should not be empty.",
+            min: {
+              value: 1,
+              message: "The capacity should be at least 1.",
+            },
+          })}
+        />
+        {errors?.maxCapacity?.message && (
+          <Error>{errors.maxCapacity.message}</Error>
+        )}
       </FormRow>
 
       <FormRow>
         <Label htmlFor="regularPrice">Regular price</Label>
-        <Input type="number" id="regularPrice" />
+        <Input
+          type="number"
+          id="regularPrice"
+          {...register("regularPrice", {
+            required: "This field should not be empty.",
+            min: {
+              value: 200,
+              message: "The price should be at least 200",
+            },
+          })}
+        />
+        {errors?.regularPrice?.message && (
+          <Error>{errors.regularPrice.message}</Error>
+        )}
       </FormRow>
 
       <FormRow>
         <Label htmlFor="discount">Discount</Label>
-        <Input type="number" id="discount" defaultValue={0} />
+        <Input
+          type="number"
+          id="discount"
+          defaultValue={0}
+          {...register("discount", {
+            required: "This field should not be empty.",
+            validate: (value) =>
+              value <= getValues().regularPrice ||
+              "Discount should be less than regular price.",
+          })}
+        />
+        {errors?.discount?.message && <Error>{errors.discount.message}</Error>}
       </FormRow>
 
       <FormRow>
         <Label htmlFor="description">Description for website</Label>
-        <Textarea type="number" id="description" defaultValue="" />
+        <Textarea
+          type="number"
+          id="description"
+          defaultValue=""
+          {...register("description", {
+            required: "This field should not be empty.",
+          })}
+        />
+        {errors?.description?.message && (
+          <Error>{errors.description.message}</Error>
+        )}
       </FormRow>
 
       <FormRow>
@@ -80,7 +159,7 @@ function CreateCabinForm() {
         <Button variation="secondary" type="reset">
           Cancel
         </Button>
-        <Button>Edit cabin</Button>
+        <Button disable={isCreating}>Add cabin</Button>
       </FormRow>
     </Form>
   );
