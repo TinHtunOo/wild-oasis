@@ -80,7 +80,6 @@ function Button({
       variation={variation}
       onClick={onClick}
       disabled={isDisabled}
-      isDisabled={isDisabled}
     >
       {children}
     </StyledButton>

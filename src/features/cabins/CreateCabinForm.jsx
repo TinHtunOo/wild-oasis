@@ -49,9 +49,11 @@ const Error = styled.span`
 
 CreateCabinForm.propTypes = {
   cabinToEdit: PropTypes.object,
+  onCloseModal: PropTypes.func,
+  modalOn: PropTypes.string,
 };
 
-function CreateCabinForm({ cabinToEdit = {} }) {
+function CreateCabinForm({ cabinToEdit = {}, onCloseModal, modalOn }) {
   const { id: editId, ...editValues } = cabinToEdit;
   const { isCreating, createCabin } = useCreateCabin();
   const { isEditing, editCabin } = useEditCabin();
@@ -62,23 +64,40 @@ function CreateCabinForm({ cabinToEdit = {} }) {
   });
   const { errors } = formState;
 
-  const isWorking = isCreating || isEditing;
+  // const isWorking = isCreating || isEditing;
 
   function onSubmit(data) {
     const image = typeof data.image === "string" ? data.image : data.image[0];
     if (isEditSession)
       editCabin(
         { newCabinData: { ...data, image }, id: editId },
-        { onSuccess: (data) => reset(data) }
+        {
+          onSuccess: (data) => {
+            reset(data);
+            onCloseModal();
+          },
+        }
       );
-    else createCabin({ ...data, image }, { onSuccess: (data) => reset(data) });
+    else
+      createCabin(
+        { ...data, image },
+        {
+          onSuccess: (data) => {
+            reset(data);
+            onCloseModal();
+          },
+        }
+      );
   }
 
   function onError() {
     // console.log(errs);
   }
   return (
-    <Form onSubmit={handleSubmit(onSubmit, onError)}>
+    <Form
+      onSubmit={handleSubmit(onSubmit, onError)}
+      type={modalOn ? "modal" : "regular"}
+    >
       <FormRow>
         <Label htmlFor="name">Cabin name</Label>
         <Input
@@ -169,10 +188,15 @@ function CreateCabinForm({ cabinToEdit = {} }) {
 
       <FormRow>
         {/* type is an HTML attribute! */}
-        <Button variation="secondary" type="reset" isDisabled={isWorking}>
+        <Button
+          variation="secondary"
+          type="button"
+          onClick={() => onCloseModal()}
+          disabled={isCreating || isEditing}
+        >
           Cancel
         </Button>
-        <Button isDisabled={isWorking}>
+        <Button type="submit" disabled={isCreating || isEditing}>
           {isEditSession ? "Edit Cabin" : "Create Cabin"}
         </Button>
       </FormRow>
