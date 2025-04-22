@@ -6,6 +6,7 @@ import Table from "../../ui/Table";
 
 import { formatCurrency } from "../../utils/helpers";
 import { formatDistanceFromNow } from "../../utils/helpers";
+import PropTypes from "prop-types";
 
 const Cabin = styled.div`
   font-size: 1.6rem;
@@ -34,6 +35,10 @@ const Amount = styled.div`
   font-weight: 500;
 `;
 
+BookingRow.propTypes = {
+  booking: PropTypes.object,
+};
+
 function BookingRow({
   booking: {
     id: bookingId,
@@ -45,7 +50,7 @@ function BookingRow({
     totalPrice,
     status,
     guests: { fullName: guestName, email },
-    cabins: { name: cabinName },
+    cabin: { name: cabinName },
   },
 }) {
   const statusToTagName = {
