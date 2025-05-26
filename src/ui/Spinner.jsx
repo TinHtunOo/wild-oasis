@@ -1,7 +1,7 @@
 import styled, { keyframes } from "styled-components";
 
 const rotate = keyframes`
-  to {
+  to {  
     transform: rotate(1turn)
   }
 `;
