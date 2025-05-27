@@ -16,6 +16,7 @@ import { useCheckout } from "../check-in-out/useCheckout";
 import { useDelete } from "../check-in-out/useDelete";
 import Modal from "../../ui/Modal";
 import ConfirmDelete from "../../ui/ConfirmDelete";
+import Empty from "../../ui/Empty";
 
 const HeadingGroup = styled.div`
   display: flex;
@@ -36,10 +37,11 @@ function BookingDetail() {
     "checked-out": "silver",
   };
 
-  const { status, id: bookingId } = booking;
-
+  console.log(booking);
   if (isLoading) return <Spinner />;
+  if (booking) return <Empty resourceName={"booking"} />;
 
+  const { status, id: bookingId } = booking;
   return (
     <>
       <Row type="horizontal">
