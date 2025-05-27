@@ -73,6 +73,7 @@ function Button({
   variation = "primary",
   onClick,
   isDisabled = false,
+  as,
 }) {
   return (
     <StyledButton
@@ -80,6 +81,7 @@ function Button({
       variation={variation}
       onClick={onClick}
       disabled={isDisabled}
+      as={as}
     >
       {children}
     </StyledButton>
@@ -92,6 +94,7 @@ Button.propTypes = {
   variation: PropTypes.oneOf(["primary", "secondary", "danger"]),
   onClick: PropTypes.func,
   isDisabled: PropTypes.bool,
+  as: PropTypes.elementType,
 };
 
 export default Button;
